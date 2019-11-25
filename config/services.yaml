@@ -1,0 +1,62 @@
+# This file is the entry point to configure your own services.
+# Files in the packages/ subdirectory configure your dependencies.
+
+# Put parameters here that don't need to change on each machine where the app is deployed
+# https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
+parameters:
+    allowed_system:
+        - zdrojowahotels
+        - vacationclub
+    allowed_ip:
+        - 127.0.0.1
+        - 46.248.190.52
+    perm_token: '%env(string:BEARER_TOKEN)%'
+services:
+    # default configuration for services in *this* file
+    _defaults:
+        autowire: true      # Automatically injects dependencies in your services.
+        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+
+    # makes classes in src/ available to be used as services
+    # this creates a service per class whose id is the fully-qualified class name
+    App\:
+        resource: '../src/*'
+        exclude: '../src/{DependencyInjection,Entity,Migrations,Tests,Kernel.php}'
+
+    kosinski.anonymizer:
+        class: Kosinski\Anonymizer\Anonymizer
+        autowire: true
+
+    # controllers are imported separately to make sure services can be injected
+    # as action arguments even if you don't extend any base controller class
+
+    # add more service definitions when explicit configuration is needed
+    # please note that last definitions always *replace* previous ones
+
+    App\EventListener\ValidateExceptionListener:
+        tags:
+            - { name: kernel.event_listener, event: kernel.exception }
+
+    App\EventListener\BundleDocumentExceptionListener:
+        tags:
+            - { name: kernel.event_listener, event: kernel.exception }
+
+    App\EventListener\AuthorizationExceptionListener:
+        tags:
+            - { name: kernel.event_listener, event: kernel.exception }
+
+    anonymizer.logger:
+        class: App\Service\CustomLogger
+        arguments:
+            - '@doctrine_mongodb.odm.default_document_manager'
+
+    tactician.middleware.logger:
+        class:  League\Tactician\Logger\LoggerMiddleware
+        arguments:
+            - '@tactician.logger.class_properties_formatter'
+            - '@anonymizer.logger'
+
+    app.register_task_handler:
+        class: App\Anonymizer\Command\RegisterTask\RegisterTaskCommandHandler
+        tags:
+            - { name: tactician.handler, command: App\Anonymizer\Command\RegisterTask\RegisterTaskCommand }

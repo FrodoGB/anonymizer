@@ -1,0 +1,5 @@
+test:
+  path: /test
+  controller: App\Anonymizer\Controller\MainController::index
+task:
+  resource: './routes/vacationclub.yaml'

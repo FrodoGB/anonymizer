@@ -1,0 +1,8 @@
+add_task:
+  path: /api/task
+  methods: POST
+  controller: App\Anonymizer\Controller\MainController::store
+test:
+  path: /test
+  methods: get
+  controller: App\Anonymizer\Controller\MainController::index

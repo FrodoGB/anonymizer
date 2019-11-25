@@ -1,0 +1,41 @@
+doctrine:
+    dbal:
+        default_connection: anonymizer
+        connections:
+            anonymizer:
+                # configure these for your database server
+                url: '%env(DATABASE_URL)%'
+                driver: 'pdo_mysql'
+                server_version: '5.7'
+                charset: utf8mb4
+            vacation:
+                # configure these for your database server
+                url: '%env(DATABASE_VACATION_URL)%'
+                driver: 'pdo_mysql'
+                server_version: '5.7'
+                charset: utf8mb4
+                mapping_types:
+                    bit: boolean
+                    enum: string
+
+    orm:
+        default_entity_manager: anonymizer
+        entity_managers:
+            anonymizer:
+                connection: anonymizer
+                mappings:
+                    Anonymizer:
+                        is_bundle: false
+                        type: annotation
+                        dir: '%kernel.project_dir%/src/Entity'
+                        prefix: 'App\Entity'
+                        alias: Anonymizer
+            vacation:
+                connection: vacation
+                mappings:
+                    Company:
+                        is_bundle: false
+                        type: annotation
+                        dir: '%kernel.project_dir%/src/Company/Entity'
+                        prefix: 'App\Company\Entity'
+                        alias: Company

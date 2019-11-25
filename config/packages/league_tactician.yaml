@@ -1,0 +1,7 @@
+tactician:
+    commandbus:
+        default:
+            middleware:
+                - tactician.middleware.logger
+                - tactician.middleware.locking
+                - tactician.middleware.command_handler
